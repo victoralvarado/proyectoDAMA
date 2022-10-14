@@ -9,7 +9,6 @@ import ScreenCrearCuenta from "./screens/ScreenCrearCuenta";
 import ScreenHome from "./screens/ScreenHome";
 import { LogBox } from 'react-native';
 
-SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
 function MyStack() {

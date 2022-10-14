@@ -1,85 +1,84 @@
-import React from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Box,
-} from "native-base";
-import NativeBaseIcon from "./components/NativeBaseIcon";
-import { Platform } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import ScreenInicio from "./screens/ScreenInicio";
+import ScreenIniciarSesion from "./screens/ScreenIniciarSesion";
+import ScreenCrearCuenta from "./screens/ScreenCrearCuenta";
+import ScreenHome from "./screens/ScreenHome";
+import { LogBox } from 'react-native';
 
-// Define the config
-const config = {
-  useSystemColorMode: false,
-  initialColorMode: "dark",
-};
 
-// extend the theme
-export const theme = extendTheme({ config });
+const Stack = createStackNavigator();
+function MyStack() {
 
-export default function App() {
+  LogBox.ignoreLogs(["timer"]);
+
   return (
-    <NativeBaseProvider>
-      <Center
-        _dark={{ bg: "blueGray.900" }}
-        _light={{ bg: "blueGray.50" }}
-        px={4}
-        flex={1}
-      >
-        <VStack space={5} alignItems="center">
-          <NativeBaseIcon />
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Box
-              _web={{
-                _text: {
-                  fontFamily: "monospace",
-                  fontSize: "sm",
-                },
-              }}
-              px={2}
-              py={1}
-              _dark={{ bg: "blueGray.800" }}
-              _light={{ bg: "blueGray.200" }}
-            >
-              App.js
-            </Box>
-            <Text>and save to reload.</Text>
-          </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-        </VStack>
-      </Center>
-    </NativeBaseProvider>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#9BC1BC",
+        },
+        headerTintColor: "#5D576B",
+        headerTitleStyle: {
+          fontWeight: "medium",
+          fontFamily: "Poppins"
+        },
+      }}
+    >
+      <Stack.Screen
+        name="ScreenInicio"
+        component={ScreenInicio}
+        options={{ headerShown: false }}
+      />
+      {/*
+      <Stack.Screen
+        name="ScreenIniciarSesion"
+        component={ScreenIniciarSesion}
+        options={{ title: "Iniciar Sesión" }}
+      />
+      <Stack.Screen
+        name="ScreenCrearCuenta"
+        component={ScreenCrearCuenta}
+        options={{ title: "Crear Cuenta" }}
+      />
+      <Stack.Screen
+        name="ScreenHome"
+        component={ScreenHome}
+        options={{ title: "Home" }}
+      /> */}
+    </Stack.Navigator>
   );
 }
 
-// Color Switch Component
-function ToggleDarkMode() {
-  const { colorMode, toggleColorMode } = useColorMode();
+export default function App() {
+  const [fontsLoaded] = useFonts({
+    'Poppins Bold': require('./assets/fonts/Poppins/Poppins-Bold.ttf'),
+    'Poppins Regular': require('./assets/fonts/Poppins/Poppins-Regular.ttf'),
+    'Poppins SemiBold': require('./assets/fonts/Poppins/Poppins-SemiBold.ttf'),
+    'Poppins Medium': require('./assets/fonts/Poppins/Poppins-Medium.ttf'),
+  });
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
-    <HStack space={2} alignItems="center">
-      <Text>Dark</Text>
-      <Switch
-        isChecked={colorMode === "light"}
-        onToggle={toggleColorMode}
-        aria-label={
-          colorMode === "light" ? "switch to dark mode" : "switch to light mode"
-        }
-      />
-      <Text>Light</Text>
-    </HStack>
+    <NavigationContainer>
+      <MyStack />
+    </NavigationContainer>
   );
 }

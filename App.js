@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font';
@@ -9,6 +9,7 @@ import ScreenCrearCuenta from "./screens/ScreenCrearCuenta";
 import ScreenHome from "./screens/ScreenHome";
 import { LogBox } from 'react-native';
 
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createStackNavigator();
 function MyStack() {
@@ -60,18 +61,6 @@ export default function App() {
     'Poppins SemiBold': require('./assets/fonts/Poppins/Poppins-SemiBold.ttf'),
     'Poppins Medium': require('./assets/fonts/Poppins/Poppins-Medium.ttf'),
   });
-  useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;

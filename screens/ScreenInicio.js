@@ -20,12 +20,12 @@ export default function ScreenInicio(props) {
                     />
                 </View>
                 <View style={{ marginTop: 30 }}>
-                    <Text style={{ fontFamily: "Poppins Bold", fontSize: "20px", textAlign: 'center', color: "#5D576B" }}>
+                    <Text style={{ fontFamily: "Poppins Bold", fontSize: 20, textAlign: 'center', color: "#5D576B" }}>
                         ¡Bienvenido!
                     </Text>
                 </View>
                 <View style={{ marginTop: 3 }}>
-                    <Text style={{ fontFamily: "Poppins Regular", fontSize: "14px", color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
+                    <Text style={{ fontFamily: "Poppins Regular", fontSize: 14, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
                         No busque más! Tenemos la solución para su vehículo
                     </Text>
                 </View>
@@ -44,7 +44,7 @@ export default function ScreenInicio(props) {
                         },
                         styles.wrapperCustom
                     ]} onPress={press}>
-                        <Text style={{ fontFamily: "Poppins SemiBold", fontSize: "16px", color: "#5D576B" }}>Iniciar Sesión</Text>
+                        <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Iniciar Sesión</Text>
                     </Pressable>
                 </View>
                 <View style={{ marginTop: 44, alignItems: "center" }}>
@@ -62,7 +62,7 @@ export default function ScreenInicio(props) {
                         },
                         styles.wrapperCustom
                     ]} onPress={press}>
-                        <Text style={{ fontFamily: "Poppins SemiBold", fontSize: "16px", color: "#5D576B" }}>Crear Cuenta</Text>
+                        <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Crear Cuenta</Text>
                     </Pressable>
                 </View>
             </ScrollView>
@@ -87,9 +87,8 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
         fontFamily: "Poppins Bold",
-        fontWeight: "medium",
         color: "#ED6A5A",
-        fontSize: "40px"
+        fontSize: 40
     },
     img: {
         alignSelf: "center",

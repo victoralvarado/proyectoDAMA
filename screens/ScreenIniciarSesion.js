@@ -14,8 +14,8 @@ export default function ScreenInicio(props) {
                 1: '#5D576B',
                 2: '#9BC1BC',
                 3: '#ED6A5A',
-                3: '#E6EBE0',
-                3: '#F4F1BB',
+                4: '#E6EBE0',
+                5: '#F4F1BB',
             },
             // Redefining only one shade, rest of the color will remain same.
             amber: {
@@ -89,7 +89,7 @@ export default function ScreenInicio(props) {
                                 color: "primary.3",
                                 fontFamily: "Poppins Regular",
                                 fontSize: 14
-                            }} href="#">
+                            }} onPress={() => props.navigation.navigate("ScreenCrearCuenta")}>
                                 Crear cuenta
                             </Link>
                         </HStack>

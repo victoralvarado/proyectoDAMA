@@ -23,9 +23,10 @@ function MyStack() {
         },
         headerTintColor: "#5D576B",
         headerTitleStyle: {
-          fontWeight: "medium",
-          fontFamily: "Poppins"
+          fontFamily: "Poppins SemiBold",
+          fontSize: 20,
         },
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen
@@ -33,17 +34,19 @@ function MyStack() {
         component={ScreenInicio}
         options={{ headerShown: false }}
       />
-      {/*
+      
       <Stack.Screen
         name="ScreenIniciarSesion"
         component={ScreenIniciarSesion}
         options={{ title: "Iniciar Sesión" }}
       />
+      
       <Stack.Screen
         name="ScreenCrearCuenta"
         component={ScreenCrearCuenta}
         options={{ title: "Crear Cuenta" }}
       />
+      {/*
       <Stack.Screen
         name="ScreenHome"
         component={ScreenHome}

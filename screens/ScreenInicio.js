@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Text, Dimensions, Image, Pressable } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
 export default function ScreenInicio(props) {
-    function press() {
-        console.log("hola");
-    }
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
@@ -43,7 +40,7 @@ export default function ScreenInicio(props) {
                             justifyContent: 'center'
                         },
                         styles.wrapperCustom
-                    ]} onPress={press}>
+                    ]} onPress={() => props.navigation.navigate("ScreenIniciarSesion")}>
                         <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Iniciar Sesión</Text>
                     </Pressable>
                 </View>
@@ -61,7 +58,7 @@ export default function ScreenInicio(props) {
                             justifyContent: 'center'
                         },
                         styles.wrapperCustom
-                    ]} onPress={press}>
+                    ]} onPress={() => props.navigation.navigate("ScreenCrearCuenta")}>
                         <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Crear Cuenta</Text>
                     </Pressable>
                 </View>

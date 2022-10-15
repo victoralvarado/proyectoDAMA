@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Dimensions, Image, Pressable, Text } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
-import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link } from "native-base";
-
+import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon, } from "native-base";
+import { MaterialIcons } from "@expo/vector-icons";
 export default function ScreenInicio(props) {
     function press() {
         console.log("inicio");
     }
+    const [show, setShow] = React.useState(false);
     const theme = extendTheme({
         colors: {
             // Add new color
@@ -47,9 +48,10 @@ export default function ScreenInicio(props) {
                                 fontFamily: "Poppins Medium",
                                 color: "primary.1"
                             }} >Correo</FormControl.Label>
-                            <Input _focus={{
+                            <Input style={{
+                                color: "#5D576B"
+                            }} _focus={{
                                 backgroundColor: "primary.2",
-                                color: "primary.1"
                             }} size="2xl" variant="outline" placeholder="Correo" />
                         </FormControl>
                         <FormControl w="100%" maxW="400px" mx="auto" style={{ marginTop: 10 }}>
@@ -58,10 +60,13 @@ export default function ScreenInicio(props) {
                                 fontFamily: "Poppins Medium",
                                 color: "primary.1"
                             }} >Clave</FormControl.Label>
-                            <Input _focus={{
+                            <Input style={{
+                                color: "#5D576B"
+                            }} _focus={{
                                 backgroundColor: "primary.2",
-                                color: "primary.1"
-                            }} size="2xl" variant="outline" placeholder="Clave" />
+                            }} size="2xl" variant="outline" placeholder="Clave" type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}>
+                                <Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+                            </Pressable>} />
                         </FormControl>
                         <View style={{ marginTop: 50, alignItems: "center" }}>
                             <Pressable style={({ pressed }) => [

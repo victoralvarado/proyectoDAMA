@@ -1,24 +1,108 @@
 import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Text,Input, Dimensions, Image, Pressable } from "react-native";
+import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Dimensions, Image, Pressable, Text } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
+import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link } from "native-base";
 
 export default function ScreenInicio(props) {
     function press() {
         console.log("inicio");
     }
+    const theme = extendTheme({
+        colors: {
+            // Add new color
+            primary: {
+                50: '#E3F2F9',
+                100: '#C5E4F3',
+                200: '#A2D4EC',
+                300: '#7AC1E4',
+                400: '#47A9DA',
+                500: '#0088CC',
+                600: '#007AB8',
+                700: '#006BA1',
+                800: '#005885',
+                900: '#003F5E',
+                1: '#5D576B',
+                2: '#9BC1BC',
+                3: '#ED6A5A',
+            },
+            // Redefining only one shade, rest of the color will remain same.
+            amber: {
+                400: '#d97706'
+            }
+        },
+        config: {
+            // Changing initialColorMode to 'dark'
+            initialColorMode: 'light'
+        }
+    });
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
-                <View>
-                    <Text style={styles.text}>Iniciar Sesión</Text>
-                </View>
-                <View style={{ marginTop: 14 }}>
-                    <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
-                        Bienvenido de Regreso, inicia Sesión para continuar
-                    </Text>
-                </View>
-                <View style={{ alignItems: 'center', marginTop: 44 }}>
-                </View>
+                <NativeBaseProvider theme={theme}>
+                    <Center flex={1} px="3">
+                        <View>
+                            <Text style={styles.text}>Iniciar Sesión</Text>
+                        </View>
+                        <View style={{ marginTop: 14 }}>
+                            <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
+                                Bienvenido de Regreso, inicia Sesión para continuar
+                            </Text>
+                        </View>
+                        <FormControl w="100%" maxW="400px" mx="auto" style={{ marginTop: 44 }}>
+                            <FormControl.Label _text={{
+                                fontSize: 15,
+                                fontWeight: "500",
+                                fontFamily: "Poppins Medium",
+                                color: "primary.1"
+                            }} >Correo</FormControl.Label>
+                            <Input _focus={{
+                                backgroundColor: "primary.2",
+                                color: "primary.1"
+                            }} size="2xl" variant="outline" placeholder="Correo" />
+                        </FormControl>
+                        <FormControl w="100%" maxW="400px" mx="auto" style={{ marginTop: 10 }}>
+                            <FormControl.Label _text={{
+                                fontSize: 15,
+                                fontFamily: "Poppins Medium",
+                                color: "primary.1"
+                            }} >Clave</FormControl.Label>
+                            <Input _focus={{
+                                backgroundColor: "primary.2",
+                                color: "primary.1"
+                            }} size="2xl" variant="outline" placeholder="Clave" />
+                        </FormControl>
+                        <View style={{ marginTop: 50, alignItems: "center" }}>
+                            <Pressable style={({ pressed }) => [
+                                {
+                                    backgroundColor: pressed
+                                        ? 'rgb(210, 230, 255)'
+                                        : '#9BC1BC',
+                                    fontFamily: "",
+                                    width: 265,
+                                    height: 64,
+                                    borderRadius: 15,
+                                    alignItems: "center",
+                                    justifyContent: 'center'
+                                },
+                                styles.wrapperCustom
+                            ]} onPress={press}>
+                                <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Iniciar Sesión</Text>
+                            </Pressable>
+                        </View>
+                        <HStack mt="6" style={{ marginTop: 14 }} justifyContent="center">
+                            <Text style={{ fontFamily: "Poppins Regular", fontSize: 14, color: "#5D576B" }}>
+                                ¿No tienes una cuenta?{" "}
+                            </Text>
+                            <Link _text={{
+                                color: "primary.3",
+                                fontFamily: "Poppins Regular",
+                                fontSize: 14
+                            }} href="#">
+                                Crear cuenta
+                            </Link>
+                        </HStack>
+                    </Center>
+                </NativeBaseProvider>
             </ScrollView>
         </SafeAreaView>
     );

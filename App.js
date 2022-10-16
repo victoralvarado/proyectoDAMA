@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font';
@@ -9,22 +9,31 @@ import ScreenCrearCuenta from "./screens/ScreenCrearCuenta";
 import ScreenHome from "./screens/ScreenHome";
 import { LogBox } from 'react-native';
 
+import { Appearance, useColorScheme } from 'react-native';
+
+
 
 const Stack = createStackNavigator();
 function MyStack() {
+  const colorScheme = useColorScheme()
 
+  if (process.env.NODE_ENV === 'debug') {
+    setDebugLevel(1)
+  }
   LogBox.ignoreLogs(["timer"]);
-
   return (
+
     <Stack.Navigator
+
       screenOptions={{
         headerStyle: {
           backgroundColor: "#9BC1BC",
         },
-        headerTintColor: "#5D576B",
+        headerTintColor: colorScheme === "dark" ? "#ED6A5A" : "#ED6A5A",
         headerTitleStyle: {
           fontFamily: "Poppins SemiBold",
           fontSize: 20,
+          color: "#5D576B",
         },
         headerTitleAlign: 'center',
       }}
@@ -34,13 +43,13 @@ function MyStack() {
         component={ScreenInicio}
         options={{ headerShown: false }}
       />
-      
+
       <Stack.Screen
         name="ScreenIniciarSesion"
         component={ScreenIniciarSesion}
         options={{ title: "Iniciar Sesión" }}
       />
-      
+
       <Stack.Screen
         name="ScreenCrearCuenta"
         component={ScreenCrearCuenta}

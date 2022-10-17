@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Dimensions, Image, Pressable, Text } from "react-native";
+import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, Dimensions, Image, View, Pressable, Text } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
-import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon, } from "native-base";
+import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup'
 export default function ScreenInicio(props) {
-
     const [show, setShow] = React.useState(false);
     const SignupSchema = yup.object().shape({
         correo: yup
@@ -73,18 +72,28 @@ export default function ScreenInicio(props) {
                                     {/* Fin Label Correo */}
 
                                     {/* Inicio Input Correo */}
-                                    <Input
-                                        style={{ color: "#5D576B" }}
-                                        value={values.correo}
-                                        onChangeText={handleChange('correo')}
-                                        onBlur={() => setFieldTouched('correo')}
-                                        _focus={{
-                                            backgroundColor: "primary.2",
-                                        }}
-                                        size="2xl"
-                                        variant="outline"
-                                        placeholder="Correo"
-                                    />
+                                    <View
+                                        style={{
+                                            borderRight: "1px solid #5D576B",
+                                            borderTop: "1px solid #5D576B",
+                                            borderBottom: "1px solid #5D576B",
+                                            borderLeft: "1px solid #5D576B",
+                                            borderRadius: "5px"
+                                        }}>
+                                        <Input
+                                            style={{ color: "#5D576B" }}
+                                            returnKeyType={'next'}
+                                            value={values.correo}
+                                            onChangeText={handleChange('correo')}
+                                            onBlur={() => setFieldTouched('correo')}
+                                            _focus={{
+                                                backgroundColor: "primary.2",
+                                            }}
+                                            size="2xl"
+                                            variant="outline"
+                                            placeholder="Correo"
+                                        />
+                                    </View>
                                     {/* Fin Input Correo */}
 
                                     {/* Inicio Advertencias de validacion */}
@@ -107,26 +116,35 @@ export default function ScreenInicio(props) {
                                     {/* Fin Label Clave */}
 
                                     {/* Inicio Input Clave */}
-                                    <Input
+                                    <View
                                         style={{
-                                            color: "#5D576B"
-                                        }}
-                                        value={values.clave}
-                                        onChangeText={handleChange('clave')}
-                                        onBlur={() => setFieldTouched('clave')}
-                                        _focus={{
-                                            backgroundColor: "primary.2",
-                                        }}
-                                        size="2xl"
-                                        variant="outline"
-                                        placeholder="Clave"
-                                        type={show ? "text" : "password"}
-                                        InputRightElement={
-                                            <Pressable onPress={() => setShow(!show)}>
-                                                <Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="primary.1" />
-                                            </Pressable>
-                                        }
-                                    />
+                                            borderRight: "1px solid #5D576B",
+                                            borderTop: "1px solid #5D576B",
+                                            borderBottom: "1px solid #5D576B",
+                                            borderLeft: "1px solid #5D576B",
+                                            borderRadius: "5px"
+                                        }}>
+                                        <Input
+                                            style={{
+                                                color: "#5D576B",
+                                            }}
+                                            value={values.clave}
+                                            onChangeText={handleChange('clave')}
+                                            onBlur={() => setFieldTouched('clave')}
+                                            _focus={{
+                                                backgroundColor: "primary.2",
+                                            }}
+                                            size="2xl"
+                                            variant="outline"
+                                            placeholder="Clave"
+                                            type={show ? "text" : "password"}
+                                            InputRightElement={
+                                                <Pressable onPress={() => setShow(!show)} >
+                                                    <Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="primary.1" />
+                                                </Pressable>
+                                            }
+                                        />
+                                    </View>
                                     {/* Fin Input Clave */}
 
                                     {/* Inicio Advertencias de validacion */}
@@ -195,10 +213,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
-        backgroundColor: "#E6EBE0"
+        backgroundColor: "#FFF"
     },
     scrollView: {
-        backgroundColor: '#E6EBE0',
+        backgroundColor: '#FFF',
         marginHorizontal: 5,
     },
     text: {

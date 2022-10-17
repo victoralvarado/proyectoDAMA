@@ -74,11 +74,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
-        backgroundColor: "#E6EBE0"
+        backgroundColor: "#FFF"
     },
     scrollView: {
         height: Dimensions.get('window').height,
-        backgroundColor: '#E6EBE0',
+        backgroundColor: '#FFF',
         marginHorizontal: 5,
     },
     text: {

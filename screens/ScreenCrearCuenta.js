@@ -31,10 +31,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
-        backgroundColor: "#E6EBE0"
+        backgroundColor: "#FFF"
     },
     scrollView: {
-        backgroundColor: '#E6EBE0',
+        backgroundColor: '#FFF',
         marginHorizontal: 5,
     },
     text: {

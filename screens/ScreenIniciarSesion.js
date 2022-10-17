@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, SafeAreaView, ScrollView, StatusBar, Dimensions, Image, View, Pressable, Text } from "react-native";
-import { ListItem, Avatar } from "react-native-elements";
-import { Input, Stack, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon } from "native-base";
+import { StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Pressable, Text } from "react-native";
+import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Formik, Form, Field } from 'formik';
+import { Formik } from 'formik';
 import * as yup from 'yup'
 export default function ScreenInicio(props) {
     const [show, setShow] = React.useState(false);
@@ -14,11 +13,7 @@ export default function ScreenInicio(props) {
             .required('El correo es requerido'),
         clave: yup
             .string()
-            .required('La clave es requerida')
-            .matches(
-                /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-                "Debe contener 8 caracteres, uno en mayúscula, uno en minúscula, un número y un carácter especial"
-            ),
+            .required('La clave es requerida'),
     });
     const theme = extendTheme({
         colors: {
@@ -51,11 +46,9 @@ export default function ScreenInicio(props) {
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
                         <NativeBaseProvider theme={theme}>
                             <Center flex={1}>
-
                                 <View>
                                     <Text style={styles.text}>Iniciar Sesión</Text>
                                 </View>
-
                                 <View style={{ marginTop: 14 }}>
                                     <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
                                         Bienvenido de Regreso, inicia Sesión para continuar
@@ -81,7 +74,7 @@ export default function ScreenInicio(props) {
                                             borderRadius: "5px"
                                         }}>
                                         <Input
-                                            style={{ color: "#5D576B" }}
+                                            style={{ color: "#5D576B",fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.correo}
                                             onChangeText={handleChange('correo')}
@@ -127,6 +120,7 @@ export default function ScreenInicio(props) {
                                         <Input
                                             style={{
                                                 color: "#5D576B",
+                                                fontFamily: "Poppins Regular"
                                             }}
                                             value={values.clave}
                                             onChangeText={handleChange('clave')}
@@ -213,7 +207,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
-        backgroundColor: "#FFF"
+        backgroundColor: "#FFF",
+        paddingTop:0,
     },
     scrollView: {
         backgroundColor: '#FFF',

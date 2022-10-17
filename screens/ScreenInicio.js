@@ -44,7 +44,7 @@ export default function ScreenInicio(props) {
                         <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Iniciar Sesión</Text>
                     </Pressable>
                 </View>
-                <View style={{ marginTop: 44, alignItems: "center" }}>
+                <View style={{ marginTop: 44, alignItems: "center", marginBottom:10 }}>
                     <Pressable style={({ pressed }) => [
                         {
                             backgroundColor: pressed

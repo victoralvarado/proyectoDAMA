@@ -4,7 +4,7 @@ import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Li
 import { MaterialIcons } from "@expo/vector-icons";
 import { Formik } from 'formik';
 import * as yup from 'yup'
-export default function ScreenInicio(props) {
+export default function ScreenInicio({ navigation }) {
     const [show, setShow] = React.useState(false);
     const SignupSchema = yup.object().shape({
         correo: yup
@@ -168,7 +168,7 @@ export default function ScreenInicio(props) {
                                             },
                                             styles.wrapperCustom
                                         ]}
-                                        onPress={handleSubmit} disabled={!isValid}>
+                                        onPress={() => navigation.navigate("ScreenHome")} disabled={!isValid}>
                                         <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Iniciar Sesión</Text>
                                     </Pressable>
                                 </View>

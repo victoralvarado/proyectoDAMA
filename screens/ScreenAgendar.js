@@ -5,40 +5,81 @@ import {
     StyleSheet,
     TextInput,
     Text,
-    SafeAreaView, ScrollView, StatusBar, Dimensions
+    SafeAreaView, ScrollView, StatusBar, Dimensions, Pressable
 } from "react-native";
-
-import firebase from "../database/firebase";
+import storage from './Storage';
+import {firebase} from "../database/firebase";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
-import { NativeBaseProvider, Center, extendTheme, FormControl,Input } from "native-base";
+import { NativeBaseProvider, Center, extendTheme, FormControl, Input, Slide, Box, CheckIcon, HStack } from "native-base";
 import * as yup from 'yup'
 import { Formik } from 'formik'
-export default function ScreenAgendar() {
+export default function ScreenAgendar(props) {
     const ref = firebase.firestore().collection("citas");
-
+    const [isOpenTop, setIsOpenTop] = React.useState(false);
     return (
         <Formik initialValues={{
-            nombreCompleto: "",
             fecha: "",
             hora: "",
         }}
-            onSubmit={(values, actions) => {
-                actions.resetForm();
-                ref.add({
-                    nombreCompleto: values.nombreCompleto,
-                    fecha: values.fecha,
-                    hora: values.hora,
-                })
-                alert("Agrregado");
+            onSubmit={(values) => {
+                storage
+                    .load({
+                        key: 'loginState',
+
+                        // autoSync (default: true) means if data is not found or has expired,
+                        // then invoke the corresponding sync method
+                        autoSync: true,
+
+                        // syncInBackground (default: true) means if data expired,
+                        // return the outdated data first while invoking the sync method.
+                        // If syncInBackground is set to false, and there is expired data,
+                        // it will wait for the new data and return only after the sync completed.
+                        // (This, of course, is slower)
+                        syncInBackground: true,
+
+                        // you can pass extra params to the sync method
+                        // see sync example below
+                        syncParams: {
+                            extraFetchOptions: {
+                                // blahblah
+                            },
+                            someFlag: true
+                        }
+                    })
+                    .then(ret => {
+                        // found data go to then()
+                        ref.add({
+                            nombreCompleto: ret.nombre + " " + ret.apellido,
+                            idUsuario: ret.id,
+                            fecha: values.fecha,
+                            hora: values.hora,
+                            estado:0
+                        })
+                        let timeout;
+                        setIsOpenTop(true)
+                        timeout = setTimeout(alertFunc, 2000);
+                        function alertFunc() {
+                            props.navigation.navigate("ScreenCuenta")
+                        }
+
+                    })
+                    .catch(err => {
+                        // any exception including data not found
+                        // goes to catch()
+                        //console.warn(err.message);
+                        switch (err.name) {
+                            case 'NotFoundError':
+                                break;
+                            case 'ExpiredError':
+                                // TODO
+                                break;
+                        }
+                    });
+
             }}
             validationSchema={yup.object().shape({
-                nombreCompleto: yup
-                    .string()
-                    .trim()
-                    .required('Por favor, Digite una nombre!'),
-
                 fecha: yup
                     .string()
                     .required('Por favor, Seleccione una fecha!'),
@@ -48,15 +89,14 @@ export default function ScreenAgendar() {
 
             })}>
             {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit, setFieldValue }) => (
-
-                <MyForm values={values} handleChange={handleChange} errors={errors} setFieldTouched={setFieldTouched} touched={touched} isValid={isValid} setFieldValue={setFieldValue} handleSubmit={handleSubmit} />
-
+                <MyForm values={values} isOpenTop={isOpenTop} handleChange={handleChange} errors={errors} setFieldTouched={setFieldTouched} touched={touched} isValid={isValid} setFieldValue={setFieldValue} handleSubmit={handleSubmit} />
             )}
         </Formik>
     );
 };
 
 export const MyForm = props => {
+
     const theme = extendTheme({
         colors: {
             primary: {
@@ -72,34 +112,15 @@ export const MyForm = props => {
             initialColorMode: 'light'
         }
     });
-    const { handleSubmit, handleChange, values, setFieldValue, errors, setFieldTouched, touched, isValid } = props;
+    const { handleSubmit, handleChange, values, setFieldValue, errors, setFieldTouched, touched, isValid, isOpenTop } = props;
     const fecha = new Date();
-    const [rs, setRS] = useState([]);
-    const [datos, setDatos] = useState([]);
+
+    const [rss, setRS] = useState([]);
     const [selectedDate, setSelectedDate] = useState();
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [array, setArray] = useState([]);
+    const [a, setArray] = useState([]);
     const [h, setH] = useState("");
-
-    var it = [
-        { label: "8:00 AM", value: "8:00 AM", fecha: "" },
-        { label: "9:00 AM", value: "9:00 AM", fecha: "" },
-        { label: "10:00 AM", value: "10:00 AM", fecha: "" },
-        { label: "11:00 AM", value: "11:00 AM", fecha: "" },
-        { label: "1:00 PM", value: "1:00 PM", fecha: "" },
-        { label: "2:00 PM", value: "2:00 PM", fecha: "" },
-        { label: "3:00 PM", value: "3:00 PM", fecha: "" },
-        { label: "4:00 PM", value: "4:00 PM", fecha: "" },
-    ];
-
-    var itSabado = [
-        { label: "8:00 AM", value: "8:00 AM", fecha: "" },
-        { label: "9:00 AM", value: "9:00 AM", fecha: "" },
-        { label: "10:00 AM", value: "10:00 AM", fecha: "" },
-        { label: "11:00 AM", value: "11:00 AM", fecha: "" },
-    ];
-
-
+    const [horarioss, setHorarios] = useState([]);
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
@@ -109,174 +130,185 @@ export const MyForm = props => {
     };
 
     const handleConfirm = (date) => {
+        const dias = [
+            'domingo',
+            'lunes',
+            'martes',
+            'miercoles',
+            'jueves',
+            'viernes',
+            'sabado',
+        ];
         setSelectedDate(date);
         setFieldValue('fecha', moment(date).format('DD/MM/YYYY'));
         var da = moment(date).format('DD/MM/YYYY');
         var dateParts = da.split("/");
         var dateObject = new Date(dateParts[1] + "/" + dateParts[0] + "/" + dateParts[2]);
         var day = dateObject.getDay()
-        if (day == 0) {
-            setH("");
-            const arr = [];
-            setArray(arr);
-        } else if (day == 6) {
-            setH("");
-            const arr = [];
-            setArray(arr);
-            const rs = [];
-            firebase.firestore().collection("citas").where("fecha", "==", moment(date).format('DD/MM/YYYY')).onSnapshot((querySnapshot) => {
+        let nombreDia = "";
+        nombreDia = dias[day];
+        const rs = [];
+        const horarios = [];
+        const array = [];
+        if (nombreDia != "") {
+            firebase.firestore().collection(nombreDia).onSnapshot((querySnapshot) => {
                 querySnapshot.docs.forEach((doc) => {
-                    const { fecha, hora } = doc.data();
-                    rs.push({
-                        fecha,
-                        hora
+                    const { value, h } = doc.data();
+                    horarios.push({
+                        label: value,
+                        value,
+                        fecha: moment(date).format('DD/MM/YYYY'),
+                        h
                     });
+                    const dataHo = new Set(horarios);
+                    setHorarios([...dataHo]);
+
                 });
-                const dataArr = new Set(rs);
-                let result = [...dataArr];
-                setRS(result);
-                for (var i = 0; i < itSabado.length; i++) {
-                    itSabado[i].fecha = moment(date).format('DD/MM/YYYY');
-                }
+                firebase.firestore().collection("citas").where("fecha", "==", moment(date).format('DD/MM/YYYY')).onSnapshot((querySnapshot) => {
+                    querySnapshot.docs.forEach((doc) => {
+                        const { fecha, hora,estado } = doc.data();
+                        if (estado < 3) {
+                            rs.push({
+                                label: hora,
+                                value: hora,
+                                fecha
+                            });
+                            const dataRS = new Set(rs);
+                            setRS([...dataRS]);
+                        }
+                       
 
-                const res = rs.map(({ fecha, hora }) => ({ fecha, label: hora, value: hora }));
-                datos.push(res);
-                const dataArrI = new Set(res);
-                let resultN = [...dataArrI];
-                setDatos(resultN);
-
-                const array = [];
-                for (var i = 0; i < itSabado.length; i++) {
-                    var igual = false;
-                    for (var j = 0; j < resultN.length & !igual; j++) {
-                        if (itSabado[i]['label'] == resultN[j]['label'] &&
-                            itSabado[i]['value'] == resultN[j]['value'])
-                            igual = true;
-                    }
-                    if (!igual) array.push(itSabado[i]);
-                }
-                const dataA = new Set(array);
-                let items = [...dataA];
-                setArray(items);
-
-            });
-        } else {
-            setH("");
-            const arr = [];
-            setArray(arr);
-            const rs = [];
-            firebase.firestore().collection("citas").where("fecha", "==", moment(date).format('DD/MM/YYYY')).onSnapshot((querySnapshot) => {
-                querySnapshot.docs.forEach((doc) => {
-                    const { fecha, hora } = doc.data();
-                    rs.push({
-                        fecha,
-                        hora
                     });
-                });
-                const dataArr = new Set(rs);
-                let result = [...dataArr];
-                setRS(result);
-                for (var i = 0; i < it.length; i++) {
-                    it[i].fecha = moment(date).format('DD/MM/YYYY');
-                }
+                    for (var i = 0; i < horarios.length; i++) {
+                        var igual = false;
+                        for (var j = 0; j < rs.length & !igual; j++) {
+                            if (horarios[i]['label'] == rs[j]['label'] &&
+                                horarios[i]['value'] == rs[j]['value'])
+                                igual = true;
+                        }
+                        if (!igual) {
+                            array.push(horarios[i]);
+                        }
 
-                const res = rs.map(({ fecha, hora }) => ({ fecha, label: hora, value: hora }));
-                datos.push(res);
-                const dataArrI = new Set(res);
-                let resultN = [...dataArrI];
-                setDatos(resultN);
-
-                const array = [];
-                for (var i = 0; i < it.length; i++) {
-                    var igual = false;
-                    for (var j = 0; j < resultN.length & !igual; j++) {
-                        if (it[i]['label'] == resultN[j]['label'] &&
-                            it[i]['value'] == resultN[j]['value'])
-                            igual = true;
                     }
-                    if (!igual) array.push(it[i]);
-                }
-                const dataA = new Set(array);
-                let items = [...dataA];
-                setArray(items);
+
+                    const dataA = new Set(array);
+                    setArray([...dataA]);
+                });
 
             });
         }
-
         hideDatePicker();
     };
 
-
-    const inputStyle = {
-        borderWidth: 1,
-        borderColor: '#4e4e4e',
-        padding: 12,
-        marginBottom: 5,
-    };
     return (
         <SafeAreaView>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
                 <NativeBaseProvider theme={theme}>
                     <Center flex={1}>
+                    <Slide in={isOpenTop} placement="top" style={{ marginTop: "20%", alignItems: "center" }}>
+                                <Box w="70%" position="absolute" p="5" style={{paddingTop:15}} borderRadius="2xl" bg="primary.2" alignItems="center" justifyContent="center" _dark={{
+                                    bg: "primary.2"
+                                }} safeArea>
+                                    <HStack space={2}>
+                                        <CheckIcon size="4" color="emerald.600" mt="1" _dark={{
+                                            color: "emerald.700"
+                                        }} />
+                                        <Text color="primary.1" textAlign="center" _dark={{
+                                            color: "primary.1"
+                                        }} fontWeight="medium">
+                                            Cita agendada correctamente
+                                        </Text>
+                                    </HStack>
+                                </Box>
+                            </Slide>
+                        <View>
+                            <Text style={styles.text}>Agendar Cita</Text>
+                        </View>
+                        <View style={{ marginTop: 14 }}>
+                            <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
+                                Seleccione una fecha y una hora para agendar una cita
+                            </Text>
+                        </View>
                         <FormControl w="100%" maxW="390px" style={{ marginTop: 34 }}>
-                            
-                            <FormControl.Label _text={{ fontSize: 15, fontWeight: "500", fontFamily: "Poppins Medium", color: "primary.1" }} >
-                                        Primer nombre
-                                    </FormControl.Label>
-                                    <View>
-                                <Input
-                                    style={inputStyle}
-                                    value={values.nombreCompleto}
-                                    onChangeText={handleChange('nombreCompleto')}
-                                    onBlur={() => setFieldTouched('nombreCompleto')}
-                                    placeholder="Nombre Completo"
-                                />
-                                {touched.nombreCompleto && errors.nombreCompleto &&
-                                    <Text style={{ fontSize: 12, color: '#FF0D10' }}>{errors.nombreCompleto}</Text>
-                                }
-                            </View>
                             <View>
-                                <Text>Fecha:</Text>
-                                <Text>{`${selectedDate ? moment(selectedDate).format("DD/MM/YYYY") : ""}`}</Text>
-                                <Button title="Seleccionar Fecha" onPress={showDatePicker} />
+                                <FormControl.Label _text={{ fontSize: 15, fontWeight: "500", fontFamily: "Poppins Medium", color: "primary.1" }} >
+                                    Fecha
+                                </FormControl.Label>
+                                <View
+                                    style={{
+                                        borderColor: "#5D576B",
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                    }}>
+                                    <Pressable onPress={showDatePicker}>
+                                        <Input
+                                            isReadOnly
+                                            style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                            value={selectedDate ? moment(selectedDate).format("DD/MM/YYYY") : ""}
+                                            size="2xl"
+                                            variant="outline"
+                                            placeholder="Seleccione una fecha"
+                                        />
+                                    </Pressable>
+                                </View>
                                 <DateTimePickerModal
                                     minimumDate={new Date(fecha.getFullYear(), fecha.getMonth(), (fecha.getDate() + 1))}
+                                    maximumDate={new Date(fecha.getFullYear(), fecha.getMonth(), (fecha.getDate() + 21))}
                                     isVisible={isDatePickerVisible}
                                     mode="date"
                                     onConfirm={handleConfirm}
                                     onCancel={hideDatePicker}
                                 />
                             </View>
-                            {touched.fecha && errors.fecha &&
-                                <Text style={{ fontSize: 12, color: '#FF0D10' }}>{errors.fecha}</Text>
+                            {
+                                touched.fecha && errors.fecha &&
+                                <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.fecha}</Text>
                             }
+                        </FormControl>
+                        <FormControl w="100%" maxW="390px" style={{ marginTop: 10 }}>
                             <View>
-                                <Text>Hora:</Text>
+                                <FormControl.Label _text={{ fontSize: 15, fontFamily: "Poppins Medium", color: "primary.1" }} >
+                                    Hora
+                                </FormControl.Label>
 
                                 <RNPickerSelect
                                     onValueChange={(v) => { setFieldValue('hora', v), setH(v) }}
-
-                                    placeholder={{ label: "Seleccione una Hora", value: h }}
+                                    placeholder={{ label: "Seleccione una hora", value: h }}
                                     useNativeAndroidPickerStyle={false}
-                                    items={array.map(obj => (
+                                    items={a.sort(((a, b) => a.h - b.h)).map(obj => (
                                         {
                                             label: obj.label,
                                             value: obj.value,
                                         }))}
                                     style={pickerSelectStyles}
                                 />
-                                {touched.hora && errors.hora &&
-                                    <Text style={{ fontSize: 12, color: '#FF0D10' }}>{errors.hora}</Text>
+                                {
+                                    touched.hora && errors.hora &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.hora}</Text>
                                 }
                             </View>
-
-                            <View>
-                                <Button title="Guardar registro"
-                                    disabled={!isValid}
-                                    onPress={handleSubmit}
-                                />
-                            </View>
                         </FormControl>
+                        <View style={{ marginTop: 50, alignItems: "center" }}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    {
+                                        backgroundColor: pressed
+                                            ? 'rgb(210, 230, 255)'
+                                            : '#9BC1BC',
+                                        fontFamily: "",
+                                        width: 265,
+                                        height: 64,
+                                        borderRadius: 15,
+                                        alignItems: "center",
+                                        justifyContent: 'center'
+                                    },
+                                    styles.wrapperCustom
+                                ]}
+                                onPress={handleSubmit} disabled={!isValid}>
+                                <Text style={{ fontFamily: "Poppins SemiBold", fontSize: 16, color: "#5D576B" }}>Agendar Cita</Text>
+                            </Pressable>
+                        </View>
                     </Center>
                 </NativeBaseProvider>
             </ScrollView>
@@ -302,7 +334,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: "Poppins Bold",
         color: "#ED6A5A",
-        fontSize: 40
+        fontSize: 35
     },
     img: {
         alignSelf: "center",
@@ -313,21 +345,25 @@ const styles = StyleSheet.create({
 
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
-        fontSize: 16,
-        paddingVertical: 12,
-        paddingHorizontal: 10,
+        fontSize: 20,
+        fontFamily: "Poppins Regular",
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderColor: "#5D576B",
         borderWidth: 1,
         borderRadius: 4,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
+        color: "#5D576B",
+        paddingRight: 12 // to ensure the text is never behind the icon
     },
     inputAndroid: {
-        fontSize: 16,
-        paddingHorizontal: 10,
+        fontSize: 20,
+        fontFamily: "Poppins Regular",
+        paddingHorizontal: 12,
+        borderColor: "#5D576B",
         paddingVertical: 8,
-        borderWidth: 0.5,
-        borderRadius: 8,
-        color: 'black',
-        paddingRight: 30 // to ensure the text is never behind the icon
+        borderWidth: 1.3,
+        borderRadius: 4,
+        color: "#5D576B",
+        paddingRight: 12 // to ensure the text is never behind the icon
     }
 });

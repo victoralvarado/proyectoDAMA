@@ -6,7 +6,7 @@ export default function ScreenInicio(props) {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
                 <View>
-                    <Text style={styles.text}>nombreapp</Text>
+                    <Text style={styles.text}>SERVICARS</Text>
                 </View>
                 <View style={{ marginTop: 50 }}>
                     <Image

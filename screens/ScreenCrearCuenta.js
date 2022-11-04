@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Pressable, Text } from "react-native";
-import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Link, Icon } from "native-base";
+import { StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Pressable, Text, ToastAndroid } from "react-native";
+import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Box, CheckIcon, Icon, useToast, Slide, Alert } from "native-base";
+import { Base64 } from 'js-base64';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Formik } from 'formik';
 import * as yup from 'yup'
+import CryptoJS from "react-native-crypto-js";
+import {firebase} from "../database/firebase";
 export default function ScreenCrearCuenta(props) {
-    function press() {
-        console.log("crear");
-    }
+    const [isOpenTop, setIsOpenTop] = React.useState(false);
     const [show, setShow] = React.useState(false);
     const [showC, setShowC] = React.useState(false);
+    const ref = firebase.firestore().collection("usuarios");
     const SignupSchema = yup.object().shape({
         nombre: yup
             .string()
@@ -63,14 +65,47 @@ export default function ScreenCrearCuenta(props) {
             }}
             validationSchema={SignupSchema}
             onSubmit={values => {
-                console.log(values);
+                //showToast();
+                let timeout;
+                setIsOpenTop(true)
+                timeout = setTimeout(alertFunc, 2000);
+                function alertFunc() {
+                    var encode = CryptoJS.AES.encrypt(values.clave, 'Clav3123!').toString();
+                    ref.add({
+                        nombre: values.nombre,
+                        apellido: values.apellido,
+                        telefono: values.telefono,
+                        correo: values.correo,
+                        clave: encode,
+                        nivel: 1
+                    })
+                    props.navigation.navigate("ScreenIniciarSesion")
+                }
+
             }}
         >
             {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
                 <SafeAreaView style={styles.container}>
+
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={styles.scrollView}>
                         <NativeBaseProvider theme={theme}>
                             <Center flex={1}>
+                                <Slide in={isOpenTop} placement="top" style={{ marginTop: "20%", alignItems: "center" }}>
+                                    <Box w="70%" position="absolute" p="2" borderRadius="2xl" bg="primary.2" alignItems="center" justifyContent="center" _dark={{
+                                        bg: "primary.2"
+                                    }} safeArea>
+                                        <HStack space={2}>
+                                            <CheckIcon size="4" color="emerald.600" mt="1" _dark={{
+                                                color: "emerald.700"
+                                            }} />
+                                            <Text color="primary.1" textAlign="center" _dark={{
+                                                color: "primary.1"
+                                            }} fontWeight="medium">
+                                                Cuenta creada correctamente
+                                            </Text>
+                                        </HStack>
+                                    </Box>
+                                </Slide>
                                 <View>
                                     <Text style={styles.text}>Crear Cuenta</Text>
                                 </View>
@@ -79,6 +114,7 @@ export default function ScreenCrearCuenta(props) {
                                         Ingresa tus datos para crear una cuenta
                                     </Text>
                                 </View>
+
                                 <FormControl w="100%" maxW="390px" style={{ marginTop: 34 }}>
 
                                     {/* Inicio Label Nombre */}
@@ -90,14 +126,12 @@ export default function ScreenCrearCuenta(props) {
                                     {/* Inicio Input Nombre */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
-                                            style={{ color: "#5D576B",fontFamily: "Poppins Regular" }}
+                                            style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.nombre}
                                             onChangeText={handleChange('nombre')}
@@ -131,14 +165,12 @@ export default function ScreenCrearCuenta(props) {
                                     {/* Inicio Input Apellido */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
-                                            style={{ color: "#5D576B",fontFamily: "Poppins Regular" }}
+                                            style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.apellido}
                                             onChangeText={handleChange('apellido')}
@@ -172,14 +204,12 @@ export default function ScreenCrearCuenta(props) {
                                     {/* Inicio Input Teléfono */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
-                                            style={{ color: "#5D576B",fontFamily: "Poppins Regular" }}
+                                            style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.telefono}
                                             onChangeText={handleChange('telefono')}
@@ -213,14 +243,12 @@ export default function ScreenCrearCuenta(props) {
                                     {/* Inicio Input Correo */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
-                                            style={{ color: "#5D576B",fontFamily: "Poppins Regular" }}
+                                            style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.correo}
                                             onChangeText={handleChange('correo')}
@@ -254,11 +282,9 @@ export default function ScreenCrearCuenta(props) {
                                     {/* Inicio Input Clave */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
                                             style={{
@@ -296,18 +322,16 @@ export default function ScreenCrearCuenta(props) {
 
                                     {/* Inicio Label Confirmar Clave */}
                                     <FormControl.Label _text={{ fontSize: 15, fontFamily: "Poppins Medium", color: "primary.1" }} >
-                                        Confirmar Clave
+                                        Confirmar clave
                                     </FormControl.Label>
                                     {/* Fin Label Confirmar Clave */}
 
                                     {/* Inicio Input Confirmar Clave */}
                                     <View
                                         style={{
-                                            borderRight: "1px solid #5D576B",
-                                            borderTop: "1px solid #5D576B",
-                                            borderBottom: "1px solid #5D576B",
-                                            borderLeft: "1px solid #5D576B",
-                                            borderRadius: "5px"
+                                            borderColor: "#5D576B",
+                                            borderWidth: 1,
+                                            borderRadius: 4,
                                         }}>
                                         <Input
                                             style={{
@@ -342,7 +366,7 @@ export default function ScreenCrearCuenta(props) {
 
                                 </FormControl>
                                 {/* Inicio Boton Crear Cuenta */}
-                                <View style={{ marginTop: 35, alignItems: "center",marginBottom:10 }}>
+                                <View style={{ marginTop: 35, alignItems: "center", marginBottom: 10 }}>
                                     <Pressable
                                         style={({ pressed }) => [
                                             {
@@ -380,7 +404,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
         backgroundColor: "#FFF",
-        paddingTop:0,
+        paddingTop: 0,
     },
     scrollView: {
         backgroundColor: '#FFF',

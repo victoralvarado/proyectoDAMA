@@ -5,5 +5,5 @@ The official NativeBase template for [Expo](https://docs.expo.io/)
 ## Usage
 
 ```sh
-expo init my-app --template @native-base/expo-template
+expo Storage my-app --template @native-base/expo-template
 ```

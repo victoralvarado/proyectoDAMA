@@ -1,31 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Pressable, Text, ToastAndroid } from "react-native";
 import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Box, CheckIcon, Icon, useToast, Slide, Alert } from "native-base";
-import { Base64 } from 'js-base64';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Formik } from 'formik';
 import * as yup from 'yup'
 import CryptoJS from "react-native-crypto-js";
-import {firebase} from "../database/firebase";
+import { firebase } from "../database/firebase";
 export default function ScreenCrearCuenta(props) {
     const [isOpenTop, setIsOpenTop] = React.useState(false);
     const [show, setShow] = React.useState(false);
     const [showC, setShowC] = React.useState(false);
     const ref = firebase.firestore().collection("usuarios");
+    const [display, setDisplay] = useState("none");
     const SignupSchema = yup.object().shape({
         nombre: yup
             .string()
-            .required('El nombre es requerido'),
+            .trim()
+            .matches(/^[aA-zZñÑáÁ-úÚ\s]+$/, "Por favor, Digite un nombre valido!")
+            .required('Por favor, Digite su nombre!'),
+
         apellido: yup
             .string()
-            .required('El apellido es requerido'),
+            .trim()
+            .required('Por favor, Digite su apellido!'),
+
         telefono: yup
             .string()
+            .trim()
+            .matches(/^[672]{1}[0-9]{7}$/, "El telefono debe contener '8' digitos el primer digito debe empezar con '7' o '6' o '2'")
             .required('El teléfono es requerido'),
+
         correo: yup
             .string()
             .email('Ingrese un correo valido')
             .required('El correo es requerido'),
+
         clave: yup
             .string()
             .required('La clave es requerida')
@@ -65,22 +74,30 @@ export default function ScreenCrearCuenta(props) {
             }}
             validationSchema={SignupSchema}
             onSubmit={values => {
-                //showToast();
-                let timeout;
-                setIsOpenTop(true)
-                timeout = setTimeout(alertFunc, 2000);
-                function alertFunc() {
-                    var encode = CryptoJS.AES.encrypt(values.clave, 'Clav3123!').toString();
-                    ref.add({
-                        nombre: values.nombre,
-                        apellido: values.apellido,
-                        telefono: values.telefono,
-                        correo: values.correo,
-                        clave: encode,
-                        nivel: 1
-                    })
-                    props.navigation.navigate("ScreenIniciarSesion")
-                }
+                firebase.firestore().collection("usuarios").where("correo", "==", values.correo).get()
+                    .then((querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            setDisplay("flex")
+                        } else {
+                            setDisplay("none")
+                            let timeout;
+                            setIsOpenTop(true)
+                            timeout = setTimeout(alertFunc, 2000);
+                            function alertFunc() {
+                                var encode = CryptoJS.AES.encrypt(values.clave, 'Clav3123!').toString();
+                                ref.add({
+                                    nombre: values.nombre,
+                                    apellido: values.apellido,
+                                    telefono: values.telefono,
+                                    correo: values.correo,
+                                    clave: encode,
+                                    nivel: 1
+                                })
+                                props.navigation.navigate("ScreenIniciarSesion")
+                            }
+                        }
+                    }
+                    )
 
             }}
         >
@@ -212,6 +229,7 @@ export default function ScreenCrearCuenta(props) {
                                             style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.telefono}
+                                            keyboardType="phone-pad"
                                             onChangeText={handleChange('telefono')}
                                             onBlur={() => setFieldTouched('telefono')}
                                             _focus={{
@@ -251,6 +269,7 @@ export default function ScreenCrearCuenta(props) {
                                             style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.correo}
+                                            keyboardType="email-address"
                                             onChangeText={handleChange('correo')}
                                             onBlur={() => setFieldTouched('correo')}
                                             _focus={{
@@ -268,6 +287,7 @@ export default function ScreenCrearCuenta(props) {
                                         touched.correo && errors.correo &&
                                         <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.correo}</Text>
                                     }
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium', display: display }}>Correo en uso</Text>
                                     {/* Fin Advertencias de validacion */}
 
                                 </FormControl>

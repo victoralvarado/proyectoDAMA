@@ -165,6 +165,7 @@ export default function ScreenProductos(props) {
     });
     return (
         <Formik
+            style={styles.container}
             initialValues={{
                 nombre: '',
                 marca: '',
@@ -204,252 +205,242 @@ export default function ScreenProductos(props) {
             }}
         >
             {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
-                <SafeAreaView style={styles.scrollView}>
-                    <NativeBaseProvider theme={theme}>
-                        <Center>
-                            <View>
-                                <Text style={styles.text}>Productos</Text>
-                            </View>
-                            <View style={{ marginTop: 14 }}>
-                                <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
-                                    Lista de productos
+                <NativeBaseProvider theme={theme}>
+                    <View style={{ backgroundColor: "#FFF" }}>
+                        <Text style={styles.text}>Productos</Text>
+                    </View>
+                    <View style={{ paddingTop: 14, backgroundColor: "#FFF" }}>
+                        <Text style={{ fontFamily: "Poppins Medium", fontSize: 16, color: "#5D576B", marginStart: 55, marginEnd: 55, textAlign: 'center' }}>
+                            Lista de productos
+                        </Text>
+                        <VStack style={{ marginTop: 5, marginBottom: 2 }} space={4} alignItems="center">
+                            <Tooltip label="Nuevo Producto" >
+                                <Button onPress={handleShowM}
+                                    _pressed={{
+                                        bg: "primary.5"
+                                    }}
+                                    alignSelf="center" _text={{
+                                        color: "primary.1",
+                                        fontFamily: "Poppins SemiBold"
+                                    }} bg="primary.2" >Agregar Nuevo Producto</Button>
+                            </Tooltip>
+                        </VStack>
+                    </View>
+                    <ScrollView style={{ backgroundColor: "#FFF", flex: 1 }}>
+                        {
+                            productos.sort(((a, b) => a.nombre - b.nombre)).map((pr) => {
+                                return (
+                                    <ListItem
+                                        key={pr.id}
+                                        containerStyle={{ borderColor: "#F1F1F1", alignSelf: "center", width: "90%", backgroundColor: "#FFF", borderRadius: 5, padding: 0, marginBottom: 5, borderWidth: 2 }}
+                                    >
+                                        <ListItem.Chevron />
+                                        <ListItem.Content>
+                                            <ListItem.Title style={{ color: "#5D576B", fontSize: 15, fontFamily: "Poppins Bold" }}>{pr.nombre}</ListItem.Title>
+                                            <ListItem.Subtitle style={{ color: "#5D576B" }}>Marca: {pr.marca}</ListItem.Subtitle>
+                                            <ListItem.Subtitle style={{ color: "#5D576B" }}>Activo: <Text style={{ color: pr.activo == "1" ? "green" : "red" }}>{pr.activo == "1" ? "✔" : "✘"}</Text></ListItem.Subtitle>
+                                            <ListItem.Subtitle style={{ color: "#5D576B" }}>
+                                                Precio: ${pr.precio} <Text style={{ textDecorationLine: 'line-through', color: 'red' }}>{pr.precioAnterior != "" ? "$" + pr.precioAnterior : ""}</Text>
+                                            </ListItem.Subtitle>
+                                        </ListItem.Content>
+                                        <Image source={{ uri: pr.imagen }} style={{ width: 50, height: 50 }} />
+                                        <Icon
+                                            raised
+                                            name='file-edit'
+                                            type='material-community'
+                                            color='green'
+                                            size={20}
+                                            onPress={() => { props.navigation.navigate("ScreenEditarProducto", { productId: pr.id, }) }} />
+                                        <Icon
+                                            raised
+                                            name='delete'
+                                            type='material-community'
+                                            color='red'
+                                            size={20}
+                                            onPress={() => openConfirmationAlert(pr.id, pr.imagen)} />
+                                    </ListItem>
+                                );
+                            })
+
+                        }
+                    </ScrollView>
+                    <Modal isOpen={showModal} onClose={() => setShowModal(false)} style={{ width: '100%' }}>
+                        <Modal.Content maxWidth="400px">
+                            <Modal.CloseButton />
+                            <Modal.Header>
+                                <Text style={{ textTransform: 'capitalize', fontSize: 20 }}>
+                                    Producto
                                 </Text>
-                                <VStack style={{ marginTop: 5 }} space={4} alignItems="center">
-                                    <Tooltip label="Nuevo Producto" >
-                                        <Button onPress={handleShowM}
-                                            _pressed={{
-                                                bg: "primary.5"
-                                            }}
-                                            alignSelf="center" _text={{
-                                                color: "primary.1",
-                                                fontFamily: "Poppins SemiBold"
-                                            }} bg="primary.2" >Agregar Nuevo Producto</Button>
-                                    </Tooltip>
-                                </VStack>
-                            </View>
-                            <Box w="95%" style={{ marginTop: 5 }} rounded="sm" _text={{
-                                fontSize: 'md',
-                                fontWeight: 'medium',
-                                color: 'warmGray.50',
-                                textAlign: 'center'
-                            }}>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormControl isRequired>
+                                    <FormControl.Label>Nombre</FormControl.Label>
+
+                                    <Input
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        variant="outline"
+                                        placeholder="Nombre producto"
+                                        value={values.nombre}
+                                        onChangeText={handleChange('nombre')}
+                                        onBlur={() => setFieldTouched('nombre')}
+                                    />
+                                </FormControl>
                                 {
-                                    productos.sort(((a, b) => a.nombre - b.nombre)).map((pr) => {
-                                        return (
-                                            <ListItem
-                                                key={pr.id}
-                                                containerStyle={{ borderColor: 'gray', borderWidth: 1, borderRadius: 4, padding: 0, marginTop: 2 }}
-                                            >
-                                                <ListItem.Chevron />
-                                                <ListItem.Content>
-                                                    <ListItem.Title style={{ color: "#5D576B", fontSize: 15, fontFamily: "Poppins Bold" }}>{pr.nombre}</ListItem.Title>
-                                                    <ListItem.Subtitle style={{ color: "#5D576B" }}>Marca: {pr.marca}</ListItem.Subtitle>
-                                                    <ListItem.Subtitle style={{ color: "#5D576B" }}>Activo: <Text style={{ color: pr.activo == "1" ? "green" : "red" }}>{pr.activo == "1" ? "✔" : "✘"}</Text></ListItem.Subtitle>
-                                                    <ListItem.Subtitle style={{ color: "#5D576B" }}>
-                                                        Precio: {pr.precio} USD <Text style={{ textDecorationLine: 'line-through', color: 'red' }}>{pr.precioAnterior != "" ? pr.precioAnterior + " USD" : ""}</Text>
-                                                    </ListItem.Subtitle>
-                                                </ListItem.Content>
-                                                <Image source={{ uri: pr.imagen }} style={{ width: 50, height: 50 }} />
-                                                <Icon
-                                                    raised
-                                                    name='file-edit'
-                                                    type='material-community'
-                                                    color='green'
-                                                    size={20}
-                                                    onPress={() => { props.navigation.navigate("ScreenEditarProducto", { productId: pr.id, }) }} />
-                                                <Icon
-                                                    raised
-                                                    name='delete'
-                                                    type='material-community'
-                                                    color='red'
-                                                    size={20}
-                                                    onPress={() => openConfirmationAlert(pr.id,pr.imagen)} />
-                                            </ListItem>
-                                        );
-                                    })
-
+                                    touched.nombre && errors.nombre &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.nombre}</Text>
                                 }
-                            </Box>
-                            <Modal isOpen={showModal} onClose={() => setShowModal(false)} style={{ width: '100%' }}>
-                                <Modal.Content maxWidth="400px">
-                                    <Modal.CloseButton />
-                                    <Modal.Header>
-                                        <Text style={{ textTransform: 'capitalize', fontSize: 20 }}>
-                                            Producto
-                                        </Text>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <FormControl isRequired>
-                                            <FormControl.Label>Nombre</FormControl.Label>
+                                <FormControl isRequired>
+                                    <FormControl.Label>Marca</FormControl.Label>
+                                    <Input
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        variant="outline"
+                                        placeholder="Marca producto"
+                                        value={values.marca}
+                                        onChangeText={handleChange('marca')}
+                                        onBlur={() => setFieldTouched('marca')}
+                                    />
+                                </FormControl>
+                                {
+                                    touched.marca && errors.marca &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.marca}</Text>
+                                }
+                                <FormControl isRequired>
+                                    <FormControl.Label>Cantidad</FormControl.Label>
+                                    <Input
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        variant="outline"
+                                        placeholder="Cantidad producto"
+                                        value={values.cantidad}
+                                        onChangeText={handleChange('cantidad')}
+                                        onBlur={() => setFieldTouched('cantidad')}
+                                    />
+                                </FormControl>
+                                {
+                                    touched.cantidad && errors.cantidad &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.cantidad}</Text>
+                                }
+                                <FormControl isRequired>
+                                    <FormControl.Label>Precio</FormControl.Label>
+                                    <Input
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        variant="outline"
+                                        placeholder="Precio producto"
+                                        value={values.precio}
+                                        onChangeText={handleChange('precio')}
+                                        onBlur={() => setFieldTouched('precio')}
+                                    />
+                                </FormControl>
+                                {
+                                    touched.precio && errors.precio &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.precio}</Text>
+                                }
+                                <FormControl isRequired>
+                                    <FormControl.Label>Imagen</FormControl.Label>
+                                    {
+                                        image && <Image source={{ uri: image.uri }} style={{ width: 50, height: 50 }} />}
+                                    <Button onPress={pickImage}
+                                        _pressed={{
+                                            bg: "primary.5"
+                                        }}
+                                        _text={{
+                                            color: "primary.1",
+                                            fontFamily: "Poppins SemiBold"
+                                        }}
+                                        bg="primary.2"
+                                    >
+                                        Seleccionar Imagen
+                                    </Button>
+                                </FormControl>
+                                <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium', display: display }}>Seleccione una imagen</Text>
+                                <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium', display: displayImg }}>No se selecciono una imagen, vuelva a selccionarla</Text>
+                                <FormControl>
+                                    <FormControl.Label>Precio Anterior</FormControl.Label>
+                                    <Input
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        variant="outline"
+                                        placeholder="Precio anterior producto"
+                                        value={values.precioAnterior}
+                                        onChangeText={handleChange('precioAnterior')}
+                                        onBlur={() => setFieldTouched('precioAnterior')}
+                                    />
+                                </FormControl>
+                                {
+                                    touched.precioAnterior && errors.precioAnterior &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.precioAnterior}</Text>
+                                }
+                                <FormControl>
+                                    <FormControl.Label>Detalle</FormControl.Label>
+                                    <TextArea
+                                        style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
+                                        size="2xl"
+                                        h={20} placeholder="Detalle" w="100%" maxW="300"
+                                        value={values.detalle}
+                                        onChangeText={handleChange('detalle')}
+                                        onBlur={() => setFieldTouched('detalle')}
+                                    />
+                                </FormControl>
+                                {
+                                    touched.detalle && errors.detalle &&
+                                    <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.detalle}</Text>
+                                }
 
-                                            <Input
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                variant="outline"
-                                                placeholder="Nombre producto"
-                                                value={values.nombre}
-                                                onChangeText={handleChange('nombre')}
-                                                onBlur={() => setFieldTouched('nombre')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.nombre && errors.nombre &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.nombre}</Text>
+                                <FormControl>
+                                    <FormControl.Label>Activo</FormControl.Label>
+                                    <Checkbox value='1'
+                                        onChange={state => {
+                                            if (state) {
+                                                values.activo = '1'
+                                            } else {
+                                                values.activo = '0'
+                                            }
                                         }
-                                        <FormControl isRequired>
-                                            <FormControl.Label>Marca</FormControl.Label>
-                                            <Input
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                variant="outline"
-                                                placeholder="Marca producto"
-                                                value={values.marca}
-                                                onChangeText={handleChange('marca')}
-                                                onBlur={() => setFieldTouched('marca')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.marca && errors.marca &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.marca}</Text>
                                         }
-                                        <FormControl isRequired>
-                                            <FormControl.Label>Cantidad</FormControl.Label>
-                                            <Input
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                variant="outline"
-                                                placeholder="Cantidad producto"
-                                                value={values.cantidad}
-                                                onChangeText={handleChange('cantidad')}
-                                                onBlur={() => setFieldTouched('cantidad')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.cantidad && errors.cantidad &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.cantidad}</Text>
-                                        }
-                                        <FormControl isRequired>
-                                            <FormControl.Label>Precio</FormControl.Label>
-                                            <Input
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                variant="outline"
-                                                placeholder="Precio producto"
-                                                value={values.precio}
-                                                onChangeText={handleChange('precio')}
-                                                onBlur={() => setFieldTouched('precio')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.precio && errors.precio &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.precio}</Text>
-                                        }
-                                        <FormControl isRequired>
-                                            <FormControl.Label>Imagen</FormControl.Label>
-                                            {
-                                                image && <Image source={{ uri: image.uri }} style={{ width: 50, height: 50 }} />}
-                                            <Button onPress={pickImage}
-                                                _pressed={{
-                                                    bg: "primary.5"
-                                                }}
-                                                _text={{
-                                                    color: "primary.1",
-                                                    fontFamily: "Poppins SemiBold"
-                                                }}
-                                                bg="primary.2"
-                                            >
-                                                Seleccionar Imagen
-                                            </Button>
-                                        </FormControl>
-                                        <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium', display: display }}>Seleccione una imagen</Text>
-                                        <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium', display: displayImg }}>No se selecciono una imagen, vuelva a selccionarla</Text>
-                                        <FormControl>
-                                            <FormControl.Label>Precio Anterior</FormControl.Label>
-                                            <Input
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                variant="outline"
-                                                placeholder="Precio anterior producto"
-                                                value={values.precioAnterior}
-                                                onChangeText={handleChange('precioAnterior')}
-                                                onBlur={() => setFieldTouched('precioAnterior')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.precioAnterior && errors.precioAnterior &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.precioAnterior}</Text>
-                                        }
-                                        <FormControl>
-                                            <FormControl.Label>Detalle</FormControl.Label>
-                                            <TextArea
-                                                style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
-                                                size="2xl"
-                                                h={20} placeholder="Detalle" w="100%" maxW="300"
-                                                value={values.detalle}
-                                                onChangeText={handleChange('detalle')}
-                                                onBlur={() => setFieldTouched('detalle')}
-                                            />
-                                        </FormControl>
-                                        {
-                                            touched.detalle && errors.detalle &&
-                                            <Text style={{ fontSize: 12, color: '#ED6A5A', fontFamily: 'Poppins Medium' }}>{errors.detalle}</Text>
-                                        }
-
-                                        <FormControl>
-                                            <FormControl.Label>Activo</FormControl.Label>
-                                            <Checkbox value='1'
-                                                onChange={state => {
-                                                    if (state) {
-                                                        values.activo = '1'
-                                                    } else {
-                                                        values.activo = '0'
-                                                    }
-                                                }
-                                                }
-                                                shadow={1} accessibilityLabel="Activo" defaultIsChecked >
-                                                Activo
-                                            </Checkbox>
-                                        </FormControl>
-                                    </Modal.Body>
-                                    <Modal.Footer>
-                                        <Button.Group space={2}>
-                                            <Button variant="ghost" colorScheme="blueGray" onPress={() => {
-                                                setShowModal(false);
-                                                values.nombre = '';
-                                                values.marca = '';
-                                                values.cantidad = '';
-                                                values.precio = '';
-                                                values.precioAnterior = '';
-                                                values.detalle = '';
-                                                setImage(null);
-                                            }}
-                                                _text={{
-                                                    color: "primary.1",
-                                                    fontFamily: "Poppins SemiBold"
-                                                }}
-                                            >
-                                                Cancelar
-                                            </Button>
-                                            <Button disabled={!isValid} onPress={handleSubmit}
-                                                _pressed={{
-                                                    bg: "primary.5"
-                                                }}
-                                                _text={{
-                                                    color: "primary.1",
-                                                    fontFamily: "Poppins SemiBold"
-                                                }}
-                                                bg="primary.2"
-                                            >
-                                                Agregar
-                                            </Button>
-                                        </Button.Group>
-                                    </Modal.Footer>
-                                </Modal.Content>
-                            </Modal>
-
-                        </Center>
-                    </NativeBaseProvider>
-                </SafeAreaView>
+                                        shadow={1} accessibilityLabel="Activo" defaultIsChecked >
+                                        Activo
+                                    </Checkbox>
+                                </FormControl>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button.Group space={2}>
+                                    <Button variant="ghost" colorScheme="blueGray" onPress={() => {
+                                        setShowModal(false);
+                                        values.nombre = '';
+                                        values.marca = '';
+                                        values.cantidad = '';
+                                        values.precio = '';
+                                        values.precioAnterior = '';
+                                        values.detalle = '';
+                                        setImage(null);
+                                    }}
+                                        _text={{
+                                            color: "primary.1",
+                                            fontFamily: "Poppins SemiBold"
+                                        }}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button disabled={!isValid} onPress={handleSubmit}
+                                        _pressed={{
+                                            bg: "primary.5"
+                                        }}
+                                        _text={{
+                                            color: "primary.1",
+                                            fontFamily: "Poppins SemiBold"
+                                        }}
+                                        bg="primary.2"
+                                    >
+                                        Agregar
+                                    </Button>
+                                </Button.Group>
+                            </Modal.Footer>
+                        </Modal.Content>
+                    </Modal>
+                </NativeBaseProvider>
             )
             }
         </Formik >
@@ -460,11 +451,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
         paddingTop: StatusBar.currentHeight,
         backgroundColor: "#FFF",
-        paddingTop: 0,
     },
     scrollView: {
         height: Dimensions.get('window').height,

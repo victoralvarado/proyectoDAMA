@@ -5,7 +5,7 @@ import {
     StyleSheet,
     TextInput,
     Text,
-    SafeAreaView, ScrollView, StatusBar, Dimensions, Pressable
+    SafeAreaView, ScrollView, StatusBar, Dimensions, Pressable,LogBox
 } from "react-native";
 import storage from './Storage';
 import {firebase} from "../database/firebase";
@@ -16,6 +16,7 @@ import { NativeBaseProvider, Center, extendTheme, FormControl, Input, Slide, Box
 import * as yup from 'yup'
 import { Formik } from 'formik'
 export default function ScreenAgendar(props) {
+    LogBox.ignoreLogs(['Warning:']);
     const ref = firebase.firestore().collection("citas");
     const [isOpenTop, setIsOpenTop] = React.useState(false);
     return (

@@ -93,7 +93,7 @@ export default function LoginState(props) {
                                 function () {
                                     props.navigation.navigate("ScreenHome")
                                 }
-                                , 1000);
+                                , 1500);
 
                         }else{
                             console.log("Datos de sesion incorrectos");

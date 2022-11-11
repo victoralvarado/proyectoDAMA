@@ -206,7 +206,7 @@ export default function App() {
     setDebugLevel(1)
   }
   LogBox.ignoreLogs(["timer"]);
-  //LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+  LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
   const [fontsLoaded] = useFonts({
     'Poppins Bold': require('./assets/fonts/Poppins/Poppins-Bold.ttf'),
     'Poppins Regular': require('./assets/fonts/Poppins/Poppins-Regular.ttf'),

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, ScrollView, StatusBar, View, Pressable, Text, ToastAndroid, Image, ActivityIndicator, Dimensions } from "react-native";
 import { Input, Center, NativeBaseProvider, FormControl, extendTheme, HStack, Box, CheckIcon, Icon, Button, useToast, Slide, Alert, TextArea, Checkbox } from "native-base";
-import { Base64 } from 'js-base64';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Formik } from 'formik';
 import * as yup from 'yup'

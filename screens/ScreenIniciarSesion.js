@@ -169,6 +169,7 @@ export default function ScreenInicio(props) {
                                             style={{ color: "#5D576B", fontFamily: "Poppins Regular" }}
                                             returnKeyType={'next'}
                                             value={values.correo}
+                                            keyboardType="email-address"
                                             onChangeText={handleChange('correo')}
                                             onBlur={() => setFieldTouched('correo')}
                                             _focus={{
